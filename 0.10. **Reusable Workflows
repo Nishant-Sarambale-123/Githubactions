@@ -1,0 +1,182 @@
+Here’s a detailed explanation of **Reusable Workflows** in GitHub Actions, along with **interview questions** and **scenario-based Q\&A** to make the concept crystal clear:
+
+---
+
+## ✅ 10. **Reusable Workflows – Detailed Notes**
+
+---
+
+### 🔹 **What Are Reusable Workflows?**
+
+Reusable workflows allow you to define a **generic, repeatable workflow** and then **call it from other workflows** across the same or different repositories.
+
+🔁 This reduces duplication and promotes standardization in CI/CD pipelines.
+
+---
+
+### 🔹 **How It Works**
+
+#### ✅ **Caller Workflow Example**
+
+```yaml
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      env: prod
+```
+
+#### ✅ **Reusable Workflow (`deploy.yml`)**
+
+```yaml
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying to ${{ inputs.env }}"
+```
+
+---
+
+### 🔹 **Key Features**
+
+* Accept **inputs**, **secrets**, and **environment variables**
+* Can be versioned and reused across multiple repositories
+* Helps implement **DRY (Don't Repeat Yourself)** principles
+
+---
+
+### 🔹 **Use Cases**
+
+* Common `build`, `test`, or `deploy` routines across services
+* Compliance enforcement pipelines
+* Template pipelines for microservices
+
+---
+
+## 🎯 **Interview Questions + Answers**
+
+---
+
+### 1. **What is a reusable workflow in GitHub Actions?**
+
+A reusable workflow is a predefined workflow that can be called from other workflows using the `uses:` keyword, enabling shared automation logic.
+
+---
+
+### 2. **What is the purpose of `workflow_call`?**
+
+It defines that a workflow can be **invoked by another workflow**, and optionally takes **inputs** and **secrets**.
+
+---
+
+### 3. **How do you pass parameters to a reusable workflow?**
+
+Using the `with:` block for inputs and `secrets:` for sensitive values.
+
+```yaml
+with:
+  env: staging
+secrets:
+  token: ${{ secrets.DEPLOY_TOKEN }}
+```
+
+---
+
+### 4. **Can reusable workflows run in different repositories?**
+
+Yes, you can call a reusable workflow from another repository like:
+
+```yaml
+uses: org/repo/.github/workflows/deploy.yml@main
+```
+
+---
+
+## 🧩 **Scenario-Based Q\&A**
+
+---
+
+### 🔹 **Scenario 1:**
+
+**Q:** Your team has 10 services using the same `build-and-test` process. How do you avoid repeating YAML code?
+
+**A:**
+Create a reusable workflow `build-test.yml` in `.github/workflows/`, and call it in each service's workflow using:
+
+```yaml
+uses: org/common-pipeline/.github/workflows/build-test.yml@main
+```
+
+---
+
+### 🔹 **Scenario 2:**
+
+**Q:** You want your reusable workflow to accept a deployment environment (e.g., `dev`, `prod`). How?
+
+**A:**
+In `reusable-deploy.yml`:
+
+```yaml
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+```
+
+Then in the caller:
+
+```yaml
+uses: ./.github/workflows/reusable-deploy.yml
+with:
+  env: prod
+```
+
+---
+
+### 🔹 **Scenario 3:**
+
+**Q:** How do you secure secret tokens passed to reusable workflows?
+
+**A:**
+Declare secrets in the caller:
+
+```yaml
+secrets:
+  api_token: ${{ secrets.API_TOKEN }}
+```
+
+In the reusable workflow, access them via:
+
+```yaml
+env:
+  TOKEN: ${{ secrets.api_token }}
+```
+
+---
+
+### 🔹 **Scenario 4:**
+
+**Q:** What if the called workflow is updated in another repo?
+
+**A:**
+You must reference the correct version/tag/commit in `uses:`:
+
+```yaml
+uses: org/repo/.github/workflows/workflow.yml@v1.2.0
+```
+
+This prevents unintentional breaking changes.
+
+---
+
+Would you like a full template with `inputs`, `secrets`, and job dependencies using reusable workflows?
