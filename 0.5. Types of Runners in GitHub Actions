@@ -1,0 +1,140 @@
+Here’s a detailed explanation of the **Types of Runners** in GitHub Actions, along with **interview** and **scenario-based questions**:
+
+---
+
+## ✅ **5. Types of Runners in GitHub Actions**
+
+---
+
+### 🔹 **1. GitHub-Hosted Runners**
+
+GitHub provides and maintains a pool of pre-configured **virtual machines (VMs)** to run your jobs. These are called **GitHub-hosted runners**.
+
+#### ✅ Common runner types:
+
+| Runner Label     | OS Type | Description                         |
+| ---------------- | ------- | ----------------------------------- |
+| `ubuntu-latest`  | Linux   | Most popular, fast, supports Docker |
+| `windows-latest` | Windows | Useful for Windows-specific builds  |
+| `macos-latest`   | macOS   | Required for iOS/macOS development  |
+
+#### ✅ Features:
+
+* Pre-installed tools (Node.js, Python, Docker, Java, etc.)
+* Maintained and updated by GitHub
+* Free minutes for public repos; limited quota for private repos
+
+#### ✅ Example:
+
+```yaml
+runs-on: ubuntu-latest
+```
+
+---
+
+### 🔹 **2. Self-Hosted Runners**
+
+These are **machines you manage** and connect to your GitHub repo, org, or enterprise.
+
+#### ✅ When to use:
+
+* Need specific software/hardware (e.g., GPU, custom libraries)
+* Want full control over environment
+* Avoid GitHub-hosted minute limits
+
+#### ✅ Considerations:
+
+* You are responsible for setup, security, and updates.
+* Jobs are **queued** until your machine is available.
+* They can be registered to individual repos, orgs, or enterprise accounts.
+
+#### ✅ Example:
+
+```yaml
+runs-on: self-hosted
+```
+
+You can combine labels for filtering:
+
+```yaml
+runs-on: [self-hosted, linux, x64]
+```
+
+---
+
+## 🎯 **Interview Questions with Answers**
+
+---
+
+### 1. **What is the difference between GitHub-hosted and self-hosted runners?**
+
+* **GitHub-hosted runners** are virtual machines provided by GitHub with preinstalled tools and are maintained automatically.
+* **Self-hosted runners** are machines you configure and manage. You have full control over the environment, software, and resources.
+
+---
+
+### 2. **Why would you use a self-hosted runner over a GitHub-hosted one?**
+
+* For custom environments (e.g., specific OS, tools, or hardware like GPUs)
+* To avoid GitHub-hosted minute limits
+* For internal networking needs (e.g., behind a firewall)
+
+---
+
+### 3. **Can a workflow choose a specific type of runner?**
+
+Yes. Use the `runs-on:` key to select either a GitHub-hosted label (`ubuntu-latest`) or a custom label for self-hosted runners.
+
+---
+
+### 4. **Are self-hosted runners secure?**
+
+They can be secure, but **you** must handle:
+
+* OS patching
+* Secure network/firewall rules
+* Limiting who can trigger workflows that use the runner
+
+---
+
+## 🧩 **Scenario-Based Questions with Answers**
+
+---
+
+### 🔹 **Scenario 1:**
+
+**Q:** Your CI jobs need to run on macOS and test Swift apps. What runner do you use?
+
+**A:**
+
+```yaml
+runs-on: macos-latest
+```
+
+---
+
+### 🔹 **Scenario 2:**
+
+**Q:** You want to use your internal server (with special software) for builds. How do you set this up?
+
+**A:**
+
+* Register the machine as a self-hosted runner using GitHub CLI or UI.
+* Use `runs-on: self-hosted` in your workflow.
+* Optionally add labels for filtering (e.g., `self-hosted`, `linux`, `custom-tag`).
+
+---
+
+### 🔹 **Scenario 3:**
+
+**Q:** You run out of GitHub-hosted runner minutes. What are your options?
+
+**A:**
+
+* Switch to **self-hosted runners**
+* Optimize workflows (cache dependencies, reduce build time)
+* Buy additional GitHub Actions minutes if needed
+
+---
+
+Would you like help setting up a self-hosted runner or a table comparing features?
