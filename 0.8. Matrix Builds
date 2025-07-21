@@ -1,0 +1,171 @@
+Here’s a detailed explanation of **Matrix Builds** in GitHub Actions along with **interview questions** and **scenario-based Q\&A** to help you understand and explain it confidently:
+
+---
+
+## ✅ **8. Matrix Builds – Detailed Notes**
+
+---
+
+### 🔹 **What is a Matrix Build?**
+
+Matrix builds in GitHub Actions allow you to **run the same job multiple times** with **different combinations** of input variables like:
+
+* OS versions (Linux, Windows, macOS)
+* Programming language versions (Node, Python, Java)
+* Dependency variations
+
+This is useful for **cross-platform** and **cross-version** testing.
+
+---
+
+### 🔹 **YAML Example**
+
+```yaml
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [16, 18]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+```
+
+✅ This will run the job **4 times** (2 OSes × 2 Node versions):
+
+* Ubuntu + Node 16
+* Ubuntu + Node 18
+* Windows + Node 16
+* Windows + Node 18
+
+---
+
+### 🔹 **Advanced Matrix Features**
+
+#### ❗ Exclude combinations
+
+```yaml
+      exclude:
+        - os: windows-latest
+          node: 16
+```
+
+#### ✅ Include custom values
+
+```yaml
+      include:
+        - os: ubuntu-latest
+          node: 18
+          isLatest: true
+```
+
+---
+
+## 🎯 **Interview Questions with Answers**
+
+---
+
+### 1. **What is a matrix build in GitHub Actions?**
+
+A matrix build allows the same job to run multiple times with different combinations of variables like OS and software versions, enabling comprehensive testing.
+
+---
+
+### 2. **What are common use cases for matrix builds?**
+
+* Test a Node.js app on multiple Node versions.
+* Validate Python code on Windows, Linux, and macOS.
+* Ensure a library works with various dependency sets.
+
+---
+
+### 3. **Can you limit matrix combinations?**
+
+Yes, using `exclude` and `include` under the `matrix:` strategy to skip or add specific combinations.
+
+---
+
+### 4. **How does GitHub Actions process matrix jobs?**
+
+Each combination is treated as a **separate job**, and they run **in parallel by default**, unless limited by concurrency or job dependencies.
+
+---
+
+## 🧩 **Scenario-Based Questions with Answers**
+
+---
+
+### 🔹 **Scenario 1:**
+
+**Q:** You want to run tests on Node.js versions 16 and 18, but only on Linux. How do you define the matrix?
+
+**A:**
+
+```yaml
+matrix:
+  os: [ubuntu-latest]
+  node: [16, 18]
+```
+
+---
+
+### 🔹 **Scenario 2:**
+
+**Q:** You want to test all OSes, but skip Node 16 on Windows. How do you exclude it?
+
+**A:**
+
+```yaml
+strategy:
+  matrix:
+    os: [ubuntu-latest, windows-latest]
+    node: [16, 18]
+    exclude:
+      - os: windows-latest
+        node: 16
+```
+
+---
+
+### 🔹 **Scenario 3:**
+
+**Q:** You need to run a special deploy step only if `node=18` and `os=ubuntu-latest`. How do you conditionally handle that?
+
+**A:**
+Use `if` inside the step:
+
+```yaml
+- name: Deploy
+  if: matrix.node == '18' && matrix.os == 'ubuntu-latest'
+  run: ./deploy.sh
+```
+
+---
+
+### 🔹 **Scenario 4:**
+
+**Q:** Your team uses macOS and Windows. How can you test across both without duplicating jobs?
+
+**A:**
+Use a matrix strategy:
+
+```yaml
+matrix:
+  os: [windows-latest, macos-latest]
+```
+
+---
+
+Let me know if you’d like a visual matrix grid or a YAML starter template!
